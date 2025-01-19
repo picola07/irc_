@@ -1,0 +1,242 @@
+/**
+ * @brief Sends data over a network connection.
+ *
+ * The send function is used to send data over a network connection. It takes the following parameters:
+ * @param sockfd The file descriptor of the socket to send data on.
+ * @param buffer A pointer to the buffer containing the data to be sent.
+ * @param length The length of the data to be sent, in bytes.
+ * @param flags Optional flags that modify the behavior of the send operation.
+ *
+ * @return On success, the number of bytes sent is returned. On error, -1 is returned, and errno is set appropriately.
+ *
+ * @note The send function is a blocking function, meaning it will wait until all the data has been sent before returning.
+ *       If the socket is in non-blocking mode, the send function may return immediately with a partial count of bytes sent.
+ *       It is important to handle such cases and retry sending the remaining data.
+ */
+
+ssize_t send(int sockfd, const void *buffer, size_t length, int flags);
+
+
+/**
+ * @file functions_documentation.h
+ * @brief Documentation for socket-related functions.
+ *
+ * This file contains documentation for various socket-related functions, including socket creation, option setting, 
+ * binding, file descriptor manipulation, listening, address conversion, accepting connections, receiving data, and polling.
+ */
+
+
+
+#include <netinet/in.h>
+#include <netdb.h>
+#include <poll.h>
+
+/**
+ * @brief Creates a new socket.
+ *
+ * This function creates a new socket with the specified domain, type, and protocol.
+ *
+ * @param domain The domain of the socket (e.g., AF_INET for IPv4).
+ * @param type The type of the socket (e.g., SOCK_STREAM for TCP).
+ * @param protocol The protocol to be used with the socket (e.g., IPPROTO_TCP for TCP).
+ * 
+ * @return The file descriptor of the newly created socket, or -1 if an error occurred.
+ */ 
+int socket(int domain, int type, int protocol);
+
+
+
+/**
+ * @brief Sets the value of a socket option.
+ *
+ * This function sets the value of a specified socket option for a given socket.
+ *
+ * @param sockfd The file descriptor of the socket.
+ * @param level The level at which the option is defined.
+ * @param optname The name of the option to set.
+ * @param optval A pointer to the buffer containing the option value.
+ * @param optlen The length of the option value.
+ * @return 0 on success, -1 on failure.
+ */ 
+int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+
+
+
+/**
+ * @brief Binds a socket to a specific address and port.
+ *
+ * @param sockfd The socket file descriptor returned by socket function.
+ * @param addr   A pointer to a sockaddr structure containing the address to bind to.
+ * @param addrlen The length of the sockaddr structure.
+ * @return 0 on success, -1 on failure.
+ */ 
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+
+
+
+/**
+ * @brief Manipulates the properties of a file descriptor.
+ *
+ * The fcntl function performs various operations on the file descriptor specified by `fd`.
+ * The specific operation to be performed is determined by the `cmd` argument.
+ *
+ * @param fd The file descriptor to manipulate.
+ * @param cmd The command specifying the operation to be performed.
+ * @param arg Additional arguments required for certain operations.
+ * 
+ * @return On success, the return value depends on the specific operation performed.
+ *         On error, -1 is returned and errno is set appropriately.
+ */ 
+int fcntl(int fd, int cmd, ... /* arg */ );
+
+
+
+/**
+ * @brief Listens for incoming connections on a socket.
+ *
+ * The listen function allows the socket to accept incoming connections. It puts the socket in a passive mode, where it waits for incoming connection requests.
+ *
+ * @param sockfd The file descriptor of the socket to listen on.
+ * @param backlog The maximum length of the queue of pending connections.
+ * 
+ * @return Returns 0 on success, or -1 on error.
+ */ 
+int listen(int sockfd, int backlog);
+
+
+
+/**
+ * @brief Converts an IPv4 or IPv6 address from text to binary form.
+ *
+ * This function converts the IP address in the specified text format to its binary representation.
+ *
+ * @param af The address family (AF_INET or AF_INET6).
+ * @param src The IP address in text format.
+ * @param dst A pointer to the buffer where the binary representation of the IP address will be stored.
+ *
+ * @return Returns 1 on success, 0 if the input is not a valid IP address, or -1 if an error occurred.
+ */ 
+const char *inet_ntop(int af, const void *src, char *dst);
+
+
+
+/**
+ * @brief Accepts a new incoming connection on a socket.
+ *
+ * @param sockfd The socket file descriptor of the side getting the connection "server".
+ * @param addr   A pointer to a sockaddr structure that will contain the address of the connecting entity "client".
+ * @param addrlen A pointer to the length of the sockaddr structure.
+ * 
+ * @return On success, returns a new file descriptor for the accepted socket. On error, -1 is returned.
+ */ 
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
+
+
+/**
+ * @brief Receives data from a connected socket.
+ *
+ * @param sockfd The socket file descriptor of the recieving part "server" .
+ * @param buf Pointer to the buffer where the received data will be stored.
+ * @param len The maximum number of bytes to receive.
+ * @param flags Specifies optional flags.
+ * 
+ * @return On success, the number of bytes received is returned. On error, -1 is returned.
+ */ 
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+
+
+
+/**
+ * @brief Waits for one of a set of file descriptors to become ready to perform I/O operations.
+ *
+ * The poll() function waits for one of the file descriptors specified in the fds array to become ready for I/O operations. 
+ * The nfds argument specifies the number of elements in the fds array.
+ * The timeout argument specifies the maximum amount of time to wait, in milliseconds.
+ *
+ * @param fds An array of pollfd structures that describe the file descriptors to be monitored.
+ * @param nfds The number of elements in the fds array.
+ * @param timeout The maximum amount of time to wait, in milliseconds. A negative value means infinite timeout.
+ * 
+ * @return On success, poll() returns the number of file descriptors that have a non-zero revents field.
+ *         On error, -1 is returned, and errno is set appropriately.
+ */ 
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+
+
+
+/**
+ * @brief Retrieves the local address of a socket.
+ *
+ * @param sockfd The file descriptor of the socket.
+ * @param addr   A pointer to a sockaddr structure that will hold the local address information.
+ * @param addrlen A pointer to the length of the sockaddr structure.
+ * @return 0 on success, -1 on failure.
+ */
+int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
+
+
+/**
+ * @brief Retrieves protocol information by name.
+ *
+ * This function searches the protocol database by name and returns a pointer to a structure containing the protocol information.
+ *
+ * @param name The name of the protocol to retrieve information for.
+ * @return A pointer to a structure of type `protoent` containing the protocol information, or NULL if the protocol is not found.
+ */
+struct protoent *getprotobyname(const char *name);
+
+
+
+/**
+ * @brief Retrieves host information corresponding to a host name.
+ *
+ * This function takes a host name as input and returns a pointer to a hostent structure
+ * that contains information about the host. The hostent structure includes the host name,
+ * a list of aliases, the address type, and the network address.
+ *
+ * @param name The host name to retrieve information for.
+ * @return A pointer to a hostent structure if successful, or NULL if an error occurred.
+ */
+struct hostent *gethostbyname(const char *name);
+
+
+
+/**
+ * @brief Resolves the given host and service names to a list of network addresses.
+ *
+ * @param node A pointer to a null-terminated string representing the host name or IP address.
+ * @param service A pointer to a null-terminated string representing the service name or port number.
+ * @param hints A pointer to a struct addrinfo containing hints about the type of addresses to be returned.
+ * @param res A pointer to a struct addrinfo pointer that will be updated with the list of resolved addresses.
+ * @return Returns 0 on success, or an error code if an error occurred.
+ */
+int getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res);
+
+
+
+/**
+ * @brief Frees the memory allocated for the addrinfo structure.
+ *
+ * This function frees the memory allocated for the addrinfo structure pointed to by 'res'.
+ *
+ * @param res Pointer to the addrinfo structure to be freed.
+ */
+void freeaddrinfo(struct addrinfo *res);
+
+
+
+/**
+ * @brief Receives data from a connected socket.
+ *
+ * @param sockfd The socket file descriptor.
+ * @param buf Pointer to the buffer where the received data will be stored.
+ * @param len The maximum number of bytes to receive.
+ * @param flags Specifies the type of message reception.
+ * @return On success, the number of bytes received is returned. On error, -1 is returned.
+ */
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+
+
+
